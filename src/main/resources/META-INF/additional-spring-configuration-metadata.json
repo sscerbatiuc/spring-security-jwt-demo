@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "jwt.expiration",
+      "type": "java.lang.Integer",
+      "description": "The expiration time of the JWT token in seconds. Default is 3600 seconds (1 hour)."
+  }
+] }

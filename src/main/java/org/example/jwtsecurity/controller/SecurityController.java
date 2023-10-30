@@ -1,7 +1,9 @@
 package org.example.jwtsecurity.controller;
+
 import org.example.jwtsecurity.dto.LoginDTO;
 import org.example.jwtsecurity.dto.LoginResponseDTO;
 import org.example.jwtsecurity.configuration.TokenManager;
+import org.example.jwtsecurity.dto.RegistrationDTO;
 import org.example.jwtsecurity.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,31 +16,39 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @CrossOrigin
 public class SecurityController {
+    private final SecurityUserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
+    private final TokenManager tokenManager;
+
     @Autowired
-    private SecurityUserDetailsService userDetailsService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private TokenManager tokenManager;
+    public SecurityController(SecurityUserDetailsService userDetailsService, AuthenticationManager authenticationManager, TokenManager tokenManager) {
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
+        this.tokenManager = tokenManager;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> createToken(@RequestBody LoginDTO request) throws Exception {
         try {
-            authenticationManager.authenticate(
-                    new
-                            UsernamePasswordAuthenticationToken(request.getUsername(),
-                            request.getPassword())
-            );
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new Exception("User disabled", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new Exception("Invalid credentials", e);
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         final String jwtToken = tokenManager.generateJwtToken(userDetails);
         return ResponseEntity.ok(new LoginResponseDTO(jwtToken));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponseDTO> createToken(@RequestBody RegistrationDTO request) throws Exception {
+
+        userDetailsService.save(request.getUsername(), request.getPassword());
+        return ResponseEntity.ok().build();
     }
 }

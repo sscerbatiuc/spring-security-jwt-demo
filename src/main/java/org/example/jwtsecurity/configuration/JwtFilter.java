@@ -17,10 +17,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.ExpiredJwtException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    @Autowired
     private SecurityUserDetailsService userDetailsService;
-    @Autowired
     private TokenManager tokenManager;
+
+    @Autowired
+    public JwtFilter(SecurityUserDetailsService userDetailsService, TokenManager tokenManager) {
+        this.userDetailsService = userDetailsService;
+        this.tokenManager = tokenManager;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response, FilterChain filterChain)

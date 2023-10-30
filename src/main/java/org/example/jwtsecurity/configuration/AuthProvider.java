@@ -13,11 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthProvider implements AuthenticationProvider {
-    private static final int ATTEMPTS_LIMIT = 3;
+    private final SecurityUserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private SecurityUserDetailsService userDetailsService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthProvider(SecurityUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
