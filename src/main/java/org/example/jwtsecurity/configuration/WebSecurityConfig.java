@@ -1,6 +1,6 @@
 package org.example.jwtsecurity.configuration;
 
-import org.example.jwtsecurity.service.SecurityUserDetailsService;
+import org.example.jwtsecurity.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +15,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+//    @Autowired
+//    private JwtAuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
-    private JwtAuthenticationEntryPoint authenticationEntryPoint;
-    @Autowired
-    private SecurityUserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
     @Autowired
     private JwtFilter filter;
 
@@ -46,8 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-                .and()
+//                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+//                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

@@ -1,6 +1,6 @@
 package org.example.jwtsecurity.configuration;
 
-import org.example.jwtsecurity.service.SecurityUserDetailsService;
+import org.example.jwtsecurity.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthProvider implements AuthenticationProvider {
-    private final SecurityUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthProvider(SecurityUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthProvider(UserDetailsServiceImpl userDetailsService, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }

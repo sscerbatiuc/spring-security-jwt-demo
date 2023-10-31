@@ -2,9 +2,9 @@ package org.example.jwtsecurity.controller;
 
 import org.example.jwtsecurity.dto.LoginDTO;
 import org.example.jwtsecurity.dto.LoginResponseDTO;
-import org.example.jwtsecurity.configuration.TokenManager;
+import org.example.jwtsecurity.configuration.JwtTokenService;
 import org.example.jwtsecurity.dto.RegistrationDTO;
-import org.example.jwtsecurity.service.SecurityUserDetailsService;
+import org.example.jwtsecurity.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 public class SecurityController {
-    private final SecurityUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationManager authenticationManager;
-    private final TokenManager tokenManager;
+    private final JwtTokenService jwtTokenService;
 
     @Autowired
-    public SecurityController(SecurityUserDetailsService userDetailsService, AuthenticationManager authenticationManager, TokenManager tokenManager) {
+    public SecurityController(UserDetailsServiceImpl userDetailsService, AuthenticationManager authenticationManager, JwtTokenService jwtTokenService) {
         this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
-        this.tokenManager = tokenManager;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @PostMapping("/login")
@@ -41,12 +41,12 @@ public class SecurityController {
             throw new Exception("Invalid credentials", e);
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        final String jwtToken = tokenManager.generateJwtToken(userDetails);
+        final String jwtToken = jwtTokenService.generateJwtToken(userDetails);
         return ResponseEntity.ok(new LoginResponseDTO(jwtToken));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> createToken(@RequestBody RegistrationDTO request) throws Exception {
+    public ResponseEntity<LoginResponseDTO> createToken(@RequestBody RegistrationDTO request) {
 
         userDetailsService.save(request.getUsername(), request.getPassword());
         return ResponseEntity.ok().build();
